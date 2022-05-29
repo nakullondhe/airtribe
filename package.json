@@ -1,0 +1,20 @@
+{
+  "name": "airtribe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:nakullondhe/airtribe.git",
+  "author": "Nakul Londhe",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.11",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.4",
+    "nodemon": "^2.0.16"
+  }
+}

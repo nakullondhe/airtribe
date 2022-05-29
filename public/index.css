@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#container {
+    margin: 100px auto;
+    border-color: blue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#main > h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.buttons {
+    margin-top: 20px;    
+}
+
+.status {
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.stopped {
+    color: red;
+}
+
+.running {
+    color: green;
+}
+
+.paused {
+    color: orange;
+}
+
+.btn {
+    padding: 5px 10px;
+    margin: 0 10px;
+}
+
