@@ -1,8 +1,12 @@
 require('dotenv').config();
 const mongoose = require("mongoose");
 const express = require("express");
-const { runCrawler, addStatus } = require('./helpers/crawler');
+
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+
+global.server = server;
 
 mongoose.connect(process.env.DB, {
     useNewUrlParser: true,
@@ -11,12 +15,11 @@ mongoose.connect(process.env.DB, {
     console.log("Connected to DB");
 });
 
-app.listen(3000, () => {
-    console.log("Server started at port 3000");
+// import routes
+app.use('/', require('./routes/index'));
+
+app.listen(8081, () => {
+    console.log("Server started at port 8081");
     }
 );
 
-// add status
-// addStatus();
-
-runCrawler();
