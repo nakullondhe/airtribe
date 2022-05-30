@@ -1,12 +1,7 @@
 require('dotenv').config();
 const mongoose = require("mongoose");
 const express = require("express");
-
 const app = express();
-const http = require('http');
-const server = http.createServer(app);
-
-global.server = server;
 
 mongoose.connect(process.env.DB, {
     useNewUrlParser: true,
@@ -14,6 +9,8 @@ mongoose.connect(process.env.DB, {
 }).then(() => {
     console.log("Connected to DB");
 });
+
+require('./services/axios');
 
 // import routes
 app.use('/', require('./routes/index'));
