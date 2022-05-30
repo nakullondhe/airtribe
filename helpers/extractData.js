@@ -20,8 +20,8 @@ const getLinkFromBaseLink = async (initialLink) => {
 const getLinksFromBaseLink = async (initialLink) => {
   console.log("getting All links from base link");
   const $ = cheerio.load(initialLink.data);
-  const questionsElement = $(".s-post-summary");
   const links = [];
+  const questionsElement = $(".s-post-summary");
   questionsElement.each((i, el) => {
     const link = $(el)
       .children(".s-post-summary--content")
