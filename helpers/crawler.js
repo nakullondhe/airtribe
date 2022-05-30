@@ -5,63 +5,44 @@ const Question = require("../models/Question");
 const baseURL = 'https://stackoverflow.com'
 
 
-const addStatus = async (req, res) => {
-  const st = new Status({
-    recentLink: '',
-    status: 'stopped',
-  })
-  await st.save();
-  return;
-}
-
 const crawlRecursively = async (link) => {
   // Check Stop Status
   console.log("crawlRecursively");
   const status = await Status.findById('6291bf7ab67339a508ea7beb');
   if (status.stop) {
-    status.stop = false;
-    status.status = "stopped";
     console.info('CRAWLER TERMINATED');
-    await status.save();
-    return true;
+    if(status.status === "stopped"){
+      status.status = "stopped";
+      await status.save();
+      return 'stopped';
+    } else if(status.status === "paused"){
+      status.status = "paused";
+      await status.save();
+      return "paused";
+    }
   }
-  
-  // search link
-  const website = await axios.get(baseURL+link);
 
   // Check if data already exists
   const savedData = await Question.findOne({
     questionId: extractDataModule.getQuestionId(link),
   });
-  if (savedData) {
-    if(status.repeats === 3) {
-      console.log('Going to seond link', 'background: #222; color: #bada55')
-      const baseWebsite = await axios.get("https://stackoverflow.com/questions");
-      const secondLink = await extractDataModule.getLinkFromBaseLink(baseWebsite);
-      status.repeats = 0;
-      await status.save();
-      console.log({secondLink})
-      return crawlRecursively(secondLink);
-    }
 
+  if (savedData) {
     console.info("Data already exists");
     savedData.referenceCount = savedData.referenceCount + 1;
-    status.repeats = status.repeats + 1;
 
     await Promise.all([
       savedData.save(),
       status.save(),
     ])
-
-    console.log({savedData: await savedData, REPEATS: status.repeats})
-    const nextLink = extractDataModule.getLinkFromRelatedQuestions(website);
-    return crawlRecursively(nextLink);
+    return;
   }
 
+  // search link
+  const website = await axios.get(baseURL+link);
+
   // extract data
-  let questionData = extractDataModule.getQuestionData(website);
-  questionData.link = link;
-  questionData.questionId = extractDataModule.getQuestionId(link);
+  let questionData = extractDataModule.getQuestionData(website, link);
   
   // save data
   const newQuestion = await new Question(questionData);
@@ -73,32 +54,66 @@ const crawlRecursively = async (link) => {
   await status.save();
   
   // get nextLink
-  const nextLink = extractDataModule.getLinkFromRelatedQuestions(website);
-  // Call again
-  console.log({"nextLink" : nextLink})
-  console.log(`FUNCTION ENDED ${extractDataModule.getQuestionId(link)}`, 'background: #222; color: #bada55')
-  crawlRecursively(nextLink);
+  const newLinks = extractDataModule.getAllLinksFromRelatedQuestions(website);
+  console.log("newLinks", newLinks);
+  await Promise.all(
+    newLinks.map(async (link) => {
+      return await crawlRecursively(link)
+    })
+  );
 };
 
 const runCrawler = async () => {
   console.log("started");
   const status = await Status.findById('6291bf7ab67339a508ea7beb');
 
-  if (status.status === "stopped" || status.status === "running") {
+  if (status.status === "stopped") {
     console.log("stopped");
     await Status.findByIdAndUpdate(status._id, { status: "running" });
-    website = await axios.get("https://stackoverflow.com/questions");
-    const link = await extractDataModule.getLinkFromBaseLink(website);
-    console.log("link", baseURL+link);
-    crawlRecursively(link);
+    const website = await axios.get("https://stackoverflow.com/questions");
+    const links = await extractDataModule.getLinksFromBaseLink(website);
+    
+    const res = await Promise.all(
+      links.map(async (link) => {
+        return await crawlRecursively(link)
+      })
+    );
+
+    if(res[0] === "stopped"){
+      await Status.findByIdAndUpdate(status._id, { status: "stopped", recentLink: '', stop: false });
+    } else if(res[0] === "paused"){
+      await Status.findByIdAndUpdate(status._id, { status: "paused", stop: false });
+    }
+    status.stop = false;
+    await status.save()
+    console.log("res", await res);
+    return 'terminated';
+
   } else if (status.status === "paused") {
-    await Status.findByIdAndUpdate(status._id, { status: "running" });
-    crawlRecursively(status.recentLink);
+    console.log("paused", status.recentLink);
+    await Status.findByIdAndUpdate(status._id, { status: "running" , stop: false});
+    const website = await axios.get(`${baseURL}${status.recentLink}`);
+    const links = extractDataModule.getAllLinksFromRelatedQuestions(website);
+
+    const res = await Promise.all(
+      links.map(async (link) => {
+        return await crawlRecursively(link)
+      })
+    );
+    
+    if(res[0] === "stopped"){
+      await Status.findByIdAndUpdate(status._id, { status: "stopped", stop: false });
+    } else if(res[0] === "paused"){
+      await Status.findByIdAndUpdate(status._id, { status: "paused", stop: false });
+    }
+    
+    await status.save()
+    console.log("res", await res);
+    return 'paused';
   }
 };
 
 module.exports = {
   runCrawler,
   crawlRecursively,
-  addStatus
 };
