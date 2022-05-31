@@ -37,4 +37,6 @@ http://localhost:8081/stop
 * Cheerio
 * Axios
 
-
+## Note
+This applications in not rate limited yet and will be added soon.
+So, use with caustion as your IP might be temporily blocked for 5-10 mins.
