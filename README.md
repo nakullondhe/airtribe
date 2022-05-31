@@ -16,6 +16,8 @@ node index.js
 ## Description
 This is an api based application and provides three operations.
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/802be9a412212cd0c6ce)
+
 * Crawl -  Starts crawling stackoverflow
 ```
 http://localhost:8081/crawl
