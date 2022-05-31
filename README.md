@@ -48,6 +48,6 @@ http://localhost:8081/stop?limit=10&skip=50
 * Cheerio
 * Axios
 
-## Note
-This applications in not rate limited yet and will be added soon.
-So, use with caustion as your IP might be temporily blocked for 5-10 mins.
+## Note (Updated)
+This application now supports rate limit of 5 api requests at a time.
+#### Supported By - [axios-concurrency](https://www.npmjs.com/package/axios-concurrency)
