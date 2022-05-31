@@ -17,7 +17,7 @@ const getLinkFromBaseLink = async (initialLink) => {
     .attr("href");
   return link;
 };
-const getLinksFromBaseLink = async (initialLink) => {
+const getAllLinksFromBaseLink = async (initialLink) => {
   console.log("getting All links from base link");
   const $ = cheerio.load(initialLink.data);
   const links = [];
@@ -87,6 +87,6 @@ module.exports = {
   getLinkFromBaseLink,
   getQuestionData,
   getQuestionId,
-  getLinksFromBaseLink,
+  getAllLinksFromBaseLink,
   getAllLinksFromRelatedQuestions,
 };

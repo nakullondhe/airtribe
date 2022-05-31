@@ -10,10 +10,9 @@ const runCrawler = async () => {
   const status = await Status.findById('6291bf7ab67339a508ea7beb');
 
   if (status.status === "stopped") {
-    console.log("stopped");
     await Status.findByIdAndUpdate(status._id, { status: "running" });
     const website = await axios.get("https://stackoverflow.com/questions");
-    const links = await extractDataModule.getLinksFromBaseLink(website);
+    const links = await extractDataModule.getAllLinksFromBaseLink(website);
     
     const res = await Promise.all(
       links.map(async (link) => {
@@ -21,17 +20,11 @@ const runCrawler = async () => {
       })
     );
 
-    if(res[0] === "stopped"){
-      await Status.findByIdAndUpdate(status._id, { status: "stopped", recentLink: '', stop: false });
-    } else if(res[0] === "paused"){
-      await Status.findByIdAndUpdate(status._id, { status: "paused", stop: false });
-    }
-
-    console.log("res", await res);
+    await Status.findByIdAndUpdate(status._id, { stop: false });
+    console.log("finished");
     return 'terminated';
 
   } else if (status.status === "paused") {
-    console.log("paused", status.recentLink);
     await Status.findByIdAndUpdate(status._id, { status: "running" , stop: false});
     const website = await axios.get(`${baseURL}${status.recentLink}`);
     const links = extractDataModule.getAllLinksFromRelatedQuestions(website);
@@ -42,13 +35,8 @@ const runCrawler = async () => {
       })
     );
     
-    if(res[0] === "stopped"){
-      await Status.findByIdAndUpdate(status._id, { status: "stopped", stop: false });
-    } else if(res[0] === "paused"){
-      await Status.findByIdAndUpdate(status._id, { status: "paused", stop: false });
-    }
-    
-    console.log("res", await res);
+    await Status.findByIdAndUpdate(status._id, { stop: false });
+    console.log("finished");
     return 'paused';
   }
 };

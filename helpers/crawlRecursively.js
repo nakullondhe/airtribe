@@ -59,7 +59,7 @@ const crawlRecursively = async (link) => {
 
   // get nextLink
   const newLinks = extractDataModule.getAllLinksFromRelatedQuestions(website);
-  console.log("newLinks", newLinks);
+
   await Promise.all(
     newLinks.map(async (link) => {
       return await crawlRecursively(link);
