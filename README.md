@@ -30,6 +30,15 @@ http://localhost:8081/pause
 ```
 http://localhost:8081/stop
 ```
+* Count - Get total count of saved links.
+```
+http://localhost:8081/count
+```
+* docs - Stops crawling entirely and doesn't save the last link.
+```
+http://localhost:8081/stop?limit=10&skip=50
+```
+
 
 ## Technology Stack
 
