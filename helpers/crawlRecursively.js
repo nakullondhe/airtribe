@@ -1,4 +1,4 @@
-const {request} = require("../services/axios");
+const { request } = require("../services/axios");
 const Status = require("../models/Status");
 const baseURL = "https://stackoverflow.com";
 const extractDataModule = require("./extractData");
@@ -34,7 +34,7 @@ const crawlRecursively = async (link) => {
 
   // search link
   const website = await request.get(baseURL + link);
-  console.log('request sent')
+  console.log("request sent");
 
   // extract data
   let questionData = extractDataModule.getQuestionData(website, link);

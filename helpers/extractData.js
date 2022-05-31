@@ -29,14 +29,16 @@ const getAllLinksFromBaseLink = async (initialLink) => {
       .children("a")
       .attr("href");
     links.push(link);
-  })
+  });
   return links;
 };
 
 const getLinkFromRelatedQuestions = (website) => {
   console.log("getting link from related questions");
   const $ = cheerio.load(website.data);
-  const relateQuestionsElement = $(".related div:nth-child(1)").children("a:nth-child(2)");
+  const relateQuestionsElement = $(".related div:nth-child(1)").children(
+    "a:nth-child(2)"
+  );
   const link = relateQuestionsElement.attr("href");
   return link;
 };
@@ -45,11 +47,11 @@ const getAllLinksFromRelatedQuestions = (website) => {
   console.log("getting All link from related questions");
   const $ = cheerio.load(website.data);
   const links = [];
-  const relateQuestionsElement = $(".related").children('div')
+  const relateQuestionsElement = $(".related").children("div");
   relateQuestionsElement.each((i, el) => {
-    const link = $(el).children('a:nth-child(2)').attr('href');
+    const link = $(el).children("a:nth-child(2)").attr("href");
     links.push(link);
-  })
+  });
   return links;
 };
 
@@ -59,14 +61,14 @@ const getQuestionData = (website, link) => {
   const data = {
     title: $("#question-header").children("h1").children("a").text(),
     questionId: getQuestionId(link),
-    votes: parseInt($(".js-vote-count").attr('data-value')),
+    votes: parseInt($(".js-vote-count").attr("data-value")),
     answers: Number,
     views: Number,
     link: link,
   };
   let answers = parseInt(
     $("answers-subheader").children("div").children("h2").text()
-  )
+  );
   if (answers) {
     data.answers = answers;
   } else {
