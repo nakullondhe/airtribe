@@ -10,9 +10,6 @@ mongoose.connect(process.env.DB, {
     console.log("Connected to DB");
 });
 
-require('./services/axios');
-
-// import routes
 app.use('/', require('./routes/index'));
 
 app.listen(8081, () => {
