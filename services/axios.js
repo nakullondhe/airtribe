@@ -1,7 +1,14 @@
 const { default: axios } = require("axios");
+const { ConcurrencyManager } = require("axios-concurrency");
 const Status = require("../models/Status");
-console.log("crawler.js");
-axios.interceptors.response.use(
+
+const request = axios.create()
+
+const MAX_CONCURRENT_REQUESTS = 5;
+
+const manager = ConcurrencyManager(request, MAX_CONCURRENT_REQUESTS);
+
+request.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response.status === 429) {
@@ -15,3 +22,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+module.exports ={ request, manager};
+
+

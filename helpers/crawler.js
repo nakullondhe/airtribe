@@ -1,4 +1,4 @@
-const axios = require("axios");
+const {request} = require("../services/axios");
 const extractDataModule = require("./extractData");
 const Status = require("../models/Status");
 const Question = require("../models/Question");
@@ -11,7 +11,7 @@ const runCrawler = async () => {
 
   if (status.status === "stopped") {
     await Status.findByIdAndUpdate(status._id, { status: "running" });
-    const website = await axios.get("https://stackoverflow.com/questions");
+    const website = await request.get("https://stackoverflow.com/questions");
     const links = await extractDataModule.getAllLinksFromBaseLink(website);
     
     const res = await Promise.all(
@@ -26,7 +26,7 @@ const runCrawler = async () => {
 
   } else if (status.status === "paused") {
     await Status.findByIdAndUpdate(status._id, { status: "running" , stop: false});
-    const website = await axios.get(`${baseURL}${status.recentLink}`);
+    const website = await request.get(`${baseURL}${status.recentLink}`);
     const links = extractDataModule.getAllLinksFromRelatedQuestions(website);
 
     const res = await Promise.all(
@@ -36,7 +36,7 @@ const runCrawler = async () => {
     );
     
     await Status.findByIdAndUpdate(status._id, { stop: false });
-    console.log("finished");
+    console.info("Finished");
     return 'paused';
   }
 };

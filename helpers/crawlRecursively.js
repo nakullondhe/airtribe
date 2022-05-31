@@ -1,4 +1,4 @@
-const axios = require("axios");
+const {request} = require("../services/axios");
 const Status = require("../models/Status");
 const baseURL = "https://stackoverflow.com";
 const extractDataModule = require("./extractData");
@@ -6,7 +6,6 @@ const Question = require("../models/Question");
 
 const crawlRecursively = async (link) => {
   // Check Stop Status
-  console.log("crawlRecursively");
   const status = await Status.findById("6291bf7ab67339a508ea7beb");
   if (status.stop) {
     console.info("CRAWLER TERMINATED");
@@ -27,7 +26,6 @@ const crawlRecursively = async (link) => {
   });
 
   if (savedData) {
-    console.info("Data already exists");
     savedData.referenceCount = savedData.referenceCount + 1;
 
     await Promise.all([savedData.save(), status.save()]);
@@ -35,7 +33,8 @@ const crawlRecursively = async (link) => {
   }
 
   // search link
-  const website = await axios.get(baseURL + link);
+  const website = await request.get(baseURL + link);
+  console.log('request sent')
 
   // extract data
   let questionData = extractDataModule.getQuestionData(website, link);
@@ -44,9 +43,7 @@ const crawlRecursively = async (link) => {
   const newQuestion = await new Question(questionData);
   try {
     await newQuestion.save();
-    console.log("data Saved", newQuestion);
   } catch (err) {
-    console.log("error", err);
     if (err.code === 11000) {
       console.log("Duplicate Entry");
     }
